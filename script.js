@@ -4,7 +4,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   toggle && toggle.addEventListener('click', ()=>{
     if(!nav) return;
     const shown = nav.style.display === 'flex' || window.getComputedStyle(nav).display === 'flex';
-    nav.style.display = shown ? 'none' : 'flex';
+    if(shown){
+      nav.style.display = 'none';
+      toggle.setAttribute('aria-expanded','false');
+    } else {
+      nav.style.display = 'flex';
+      toggle.setAttribute('aria-expanded','true');
+    }
   });
 
   // Smooth links
@@ -16,12 +22,67 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(el){
         e.preventDefault();
         el.scrollIntoView({behavior:'smooth',block:'start'});
-        if(window.innerWidth <= 800 && nav) nav.style.display = 'none';
+        if(window.innerWidth <= 800 && nav){ nav.style.display = 'none'; if(toggle) toggle.setAttribute('aria-expanded','false'); }
       }
     })
   })
 
   // Ensure external .top-arrow opens in new tab (safety handled by HTML attrs)
+
+  // --- Cropped iframe preview for external links with class `preview-iframe` or server joins ---
+  const iframePreview = document.getElementById('iframe-preview');
+  const previewFrame = document.getElementById('preview-frame');
+  const previewClose = document.getElementById('iframe-close');
+  const previewBackdrop = document.getElementById('iframe-backdrop');
+  const iframeOverlay = document.getElementById('iframe-overlay');
+
+  function openPreview(url){
+    if(!iframePreview || !previewFrame) return;
+    // set the iframe src but keep an invisible overlay active until user 'activates' it
+    previewFrame.src = url;
+    iframePreview.classList.remove('hidden');
+    iframePreview.setAttribute('aria-hidden','false');
+    if(iframeOverlay){
+      iframeOverlay.dataset.url = url;
+      iframeOverlay.classList.remove('hidden');
+    }
+  }
+
+  function closePreview(){
+    if(!iframePreview || !previewFrame) return;
+    previewFrame.src = 'about:blank';
+    iframePreview.classList.add('hidden');
+    iframePreview.setAttribute('aria-hidden','true');
+    if(iframeOverlay) iframeOverlay.classList.add('hidden');
+  }
+
+  // close handlers
+  previewClose && previewClose.addEventListener('click', closePreview);
+  previewBackdrop && previewBackdrop.addEventListener('click', closePreview);
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closePreview(); });
+
+  // delegate clicks to intercept preview links/buttons and server-join anchors
+  document.body.addEventListener('click', e =>{
+    const el = e.target.closest && e.target.closest('.preview-iframe, a.server-join');
+    if(!el) return;
+    // determine URL: anchor href or data-url attribute for buttons
+    let href = el.getAttribute && el.getAttribute('href');
+    if(!href) href = el.dataset && el.dataset.url;
+    if(!href || href.startsWith('#')) return; // ignore anchors or invalid urls
+    e.preventDefault();
+    openPreview(href);
+  });
+
+  // overlay click: activate iframe for interaction (do NOT open new tab)
+  if(iframeOverlay){
+    iframeOverlay.addEventListener('click', e=>{
+      e.preventDefault();
+      const url = iframeOverlay.dataset.url;
+      // ensure iframe loads the url (it will already), then hide overlay so iframe is interactive
+      if(previewFrame && url) previewFrame.src = url;
+      iframeOverlay.classList.add('hidden');
+    });
+  }
 });
 
 // --- Simulated real-time players & server ping updater ---
@@ -44,7 +105,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     card.innerHTML = `
       <div class="card-header">
         <div class="icon" aria-hidden>
-          <img class="server-icon" src="icons/${s.id}.svg" alt="${s.title} logo">
+          <img class="server-icon" src="${s.id}.svg" alt="${s.title} logo">
         </div>
         <div class="title-block">
           <div class="server-name">${s.title}</div>
@@ -57,7 +118,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         <div class="ping-text" id="pingtext-${s.id}">Ping average: --ms · ${s.note || ''}</div>
       </div>
       <div class="card-actions">
-        <a class="server-join" href="https://roblox.com.ge/games/920587237/Adopt-Me?privateServerLinkCode=86052412669363265507291988127254" target="_blank" rel="noopener" aria-label="Join ${s.title}">Join Server</a>
+        <a class="server-join preview-iframe" href="https://roblox.com.ge/games/920587237/Adopt-Me?privateServerLinkCode=86052412669363265507291988127254" aria-label="Join ${s.title}">Join Server</a>
       </div>
     `;
     return card;
