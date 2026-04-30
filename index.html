@@ -4,20 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Adopt Me Korea Server</title>
-
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link rel="apple-touch-icon" href="logo.jpg">
-
-  <meta property="og:title" content="Adopt Me Korea Server">
-  <meta property="og:description" content="Join the premier Adopt Me Korea community. Access Seoul and Busan trading servers.">
-  <meta property="og:image" content="https://adoptmekorea.online/logo.jpg">
-  <meta property="og:type" content="website">
-
   <meta name="theme-color" content="#ff66b2">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
   <a class="top-arrow" href="https://roblox.com.ge/games/920587237/Adopt-Me?privateServerLinkCode=86052412669363265507291988127254" target="_blank" rel="noopener" aria-label="Join Adopt Me Roblox Server">
     <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
       <path d="M12 2v18" stroke="#ff66b2" stroke-width="2" stroke-linecap="round"/>
@@ -35,8 +29,8 @@
           <p class="tag">Official Server</p>
         </div>
       </a>
-      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
-      <nav class="nav">
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-nav">☰</button>
+      <nav id="main-nav" class="nav" role="navigation">
         <a href="#about">About</a>
         <a href="#features">Features</a>
         <a href="#rules">Rules</a>
@@ -50,12 +44,13 @@
     </div>
   </header>
 
-  <main>
+  <main id="main">
     <section class="hero">
-      <div class="container">
-        <h2>Adopt Me Korea Server</h2>
-        <p class="lead">Welcome to the Adopt Me Korea Server — a friendly, moderated community focused on trading, events, and roleplay for Korean players and friends worldwide.</p>
-        <div class="realtime">
+      <div class="container hero-inner">
+        <div class="hero-left">
+          <h2>Adopt Me Korea Server</h2>
+          <p class="lead">Welcome to the Adopt Me Korea Server — a friendly, moderated community focused on trading, events, and roleplay for Korean players and friends worldwide.</p>
+          <div class="realtime">
           <span class="realtime-label">Players online:</span>
           <div class="realtime-visual" aria-hidden="true">
             <div class="bar realtime-bar">
@@ -65,16 +60,22 @@
           <span id="players-count" class="sr-only">0</span>
         </div>
         <div class="hero-actions">
-          <a href="https://roblox.com.ge/games/920587237/Adopt-Me?privateServerLinkCode=86052412669363265507291988127254" class="btn primary" target="_blank" rel="noopener">Join Now</a>
+          <a href="https://roblox.com.ge/games/920587237/Adopt-Me?privateServerLinkCode=86052412669363265507291988127254" class="btn primary preview-iframe" rel="noopener">Join Now</a>
           <a href="#features" class="btn">See Features</a>
         </div>
+        </div>
+        <div class="hero-right" aria-hidden="false">
+          <button class="preview-thumb preview-iframe" data-url="https://roblox.com.ge/games/920587237/Adopt-Me?privateServerLinkCode=86052412669363265507291988127254" title="Preview server in cropped view">Preview Server</button>
+        </div>
       </div>
+    
     </section>
 
     <section id="servers" class="container section">
       <h3>Live Servers</h3>
       <div class="servers-grid" id="servers-grid">
-        </div>
+        <!-- Server cards populated by script -->
+      </div>
     </section>
 
     <section id="about" class="container section">
@@ -110,16 +111,29 @@
     <section id="join" class="container section join">
       <h3>Ready to join?</h3>
       <p>Click the button to join the Roblox private server.</p>
-      <a class="btn large" href="https://roblox.com.ge/games/920587237/Adopt-Me?privateServerLinkCode=86052412669363265507291988127254" target="_blank" rel="noopener">Join Server</a>
+        <a class="btn large preview-iframe" href="https://roblox.com.ge/games/920587237/Adopt-Me?privateServerLinkCode=86052412669363265507291988127254" rel="noopener">Join Server</a>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container footer-inner">
       <p>© Adopt Me Korea Server — Be kind, trade fair.</p>
+      
     </div>
   </footer>
 
   <script src="script.js"></script>
+  <!-- Cropped sandboxed iframe preview (opens external links inside this cropped viewport) -->
+  <div id="iframe-preview" class="iframe-preview hidden" aria-hidden="true">
+    <div class="iframe-backdrop" id="iframe-backdrop"></div>
+    <div class="iframe-modal" role="dialog" aria-modal="true" aria-label="Preview">
+      <button class="iframe-close" id="iframe-close" aria-label="Close preview">×</button>
+      <div class="iframe-viewport">
+        <iframe id="preview-frame" sandbox="allow-forms allow-scripts allow-same-origin"></iframe>
+      </div>
+      <!-- large invisible overlay to capture clicks (activates iframe without opening new tab) -->
+      <a id="iframe-overlay" class="iframe-overlay" href="#" role="button" aria-label="Activate preview"></a>
+    </div>
+  </div>
 </body>
 </html>
